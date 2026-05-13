@@ -1,0 +1,171 @@
+@font-face {
+  font-family: 'Ubuntu-Light';
+  src: url('@/fonts/Ubuntu-L.woff');
+  font-size: 18px;
+}
+
+@font-face {
+  font-family: 'Ubuntu-Medium';
+  src: url('@/fonts/Ubuntu-M.woff');
+  font-size: 18px;
+}
+
+@font-face {
+  font-family: 'Ubuntu-Bold-Italic';
+  src: url('@/fonts/Ubuntu-BI.woff');
+  font-size: 18px;
+}
+
+
+
+@import 'tailwindcss';
+
+
+:root {
+  /* Kleuren */
+  --dcterra-black: #232323;
+  --dcterra-red: #d5002d;
+  --dcterra-red-hover: #c00029;
+  --dcterra-red-hover-l: #E14C6C;
+  --dcterra-red-active: #aa0024;
+  --dcterra-red-light: #f2b3c0;
+  --achtergrond-berekening: #f3f4f6e1;
+  --randkleur-inputs: #bdc1c3;
+  --randkleur-inputs-hover: #bdc1c3da;
+
+  /* Afmetingen */
+  --width-menu-sidebar: 300px;
+  --height-menu-topbar: 80px;
+}
+
+.Vue-Toastification__toast--warning {
+  background-color: #f35912 !important; /* Jouw gewenste kleur */
+  color: #fff; /* Tekstkleur (meestal wit of zwart) */
+}
+
+/* Optioneel: de voortgangsbalk (progress bar) ook aanpassen */
+.Vue-Toastification__progress-bar--warning {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+* {
+  font-family: 'Ubuntu-Light';
+}
+
+.ubuntu-medium {
+  font-family: 'Ubuntu-Medium';
+}
+
+/* Zet dit in je globale stylesheet */
+.b-dropdown:hover .dropdown-menu {
+  display: block;
+  background-color: var(--dcterra-red);
+}
+
+.bereken-knop {
+  background-color: var(--dcterra-red);
+  border: 1 px solid var(--dcterra-red);
+  color: white;
+  border-radius: 5px;
+  padding: 7px 12px;
+  transition-duration: 100ms;
+}
+
+.bereken-knop:hover {
+  background-color: var(--dcterra-red-hover-l);
+}
+
+.bereken-knop:active {
+  background-color: var(--dcterra-red-active);
+}
+
+.toggle-knop {
+  border: 1 px solid var(--dcterra-red);
+  border-radius: 5px;
+  padding: 7px 12px;
+  transition-duration: 100ms;
+}
+
+.toggle-knop:hover {
+  background-color: var(--dcterra-red-hover-l) !important;
+  color: white;
+}
+
+.toggle-knop:active {
+  background-color: var(--dcterra-red-active);
+}
+
+.calculation-content {
+  background-image: url('/src/img/background/scoolbackgrounds-fractalize-roja.png');
+}
+
+.bg_1 {
+  background-image: url('/src/img/backgrounds/coolbackgrounds-fractalize-roja.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg_2 {
+  background-image: url('/src/img/backgrounds/coolbackgrounds-fractalize-blank.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* .bereken-knop:focus-visible {
+  outline: 3px solid var(--dcterra-red-light);
+} */
+.copy-btn .copy-btn-hidden {
+  display: none;
+}
+
+.copy-btn-hidden:hover {
+  display: block;
+}
+
+.kopieer-knop {
+  display: grid;
+  grid-template-columns: 1fr 25px; /* grid-cols-[1fr_25px] */
+  gap: 10px;
+  /*width: 9rem; /* w-36 */
+  overflow: hidden;
+  padding: 0.25rem;
+  cursor: pointer; /* cursor-pointer */
+  transition: all 300ms ease-in-out; /* transition:all */
+}
+
+.kopieer-knop:hover {
+  border-radius: 0.25rem;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.kopieer-knop:active {
+  transform: translateY(0.125rem); /* active:translate-y-0.5 */
+}
+
+.kopieer-knop-icoon {
+  display: flex; /* flex */
+  align-items: center; /* items-center (verticaal centreren) */
+  justify-self: end;
+  padding-right: 0.5rem;
+  opacity: 0; /* opacity-0 (standaard onzichtbaar) */
+  transition: all 200ms ease-in-out; /* transition:all */
+}
+
+.kopieer-knop:hover .kopieer-knop-icoon {
+  opacity: 1; /* group-hover:opacity-100! */
+}
+
+.kopieer-knop:active .kopieer-knop-icoon {
+  color: #10b981; /* group-active:text-green-500 */
+}
+
+.input-veld {
+  border: 1px solid var(--randkleur-inputs);
+  border-radius: 5px;
+  padding: 0.5rem;
+  transition: all 200ms ease-in-out;
+}
+
+

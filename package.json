@@ -1,0 +1,40 @@
+{
+  "name": "psaportal",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "format": "prettier --write --experimental-cli src/"
+  },
+  "dependencies": {
+    "@meforma/vue-toaster": "^1.3.0",
+    "@supabase/supabase-js": "^2.86.2",
+    "@tailwindcss/vite": "^4.1.17",
+    "bootstrap": "^5.3.8",
+    "bootstrap-vue-next": "^0.40.9",
+    "pinia": "^3.0.4",
+    "tailwindcss": "^4.1.17",
+    "vue-router": "^4.6.3",
+    "vue-select": "^4.0.0-beta.6",
+    "vue-toastification": "^2.0.0-rc.5",
+    "vue3-select-component": "^0.14.0",
+    "vue3-toastify": "^0.2.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^27.2.0",
+    "prettier": "3.6.2",
+    "vanillajs-datepicker": "^1.3.4",
+    "vite": "^7.2.4",
+    "vite-plugin-vue-devtools": "^8.0.5",
+    "vitest": "^4.0.14"
+  }
+}
