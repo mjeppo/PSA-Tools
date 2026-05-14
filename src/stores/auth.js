@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
-// import { supabase } from '@/supabase'; // Importeer de Supabase client
 import { useToast } from 'vue-toastification'
-import { supabase } from '@/supabase.js'
+import { pb } from '@/pocketbase.js'
 
 const toast = useToast()
 
@@ -20,28 +19,24 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    // 1. Inloggen met Supabase (Email/Wachtwoord)
+    // 1. Inloggen met PocketBase (Email/Wachtwoord)
     async login(email, password) {
       this.isLoading = true
       this.error = null
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      })
+      try {
+        const authData = await pb.collection('users').authWithPassword(email, password)
 
-      this.isLoading = false
-
-      if (error) {
-        this.error = error.message
+        this.user = authData.record
+        toast.success('Je bent succesvol ingelogd.')
+        return true
+      } catch (error) {
+        this.error = error?.message || 'Inloggen mislukt.'
         this.user = null
         return false
+      } finally {
+        this.isLoading = false
       }
-
-      // Supabase slaat de sessie op in Local Storage.
-      this.user = data.user
-      toast.success('Je bent succesvol ingelogd.')
-      return true
     },
 
     // 2. Registreren van een nieuwe gebruiker
@@ -49,38 +44,31 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
       this.error = null
 
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      })
+      try {
+        await pb.collection('users').create({
+          email,
+          password,
+          passwordConfirm: password,
+        })
 
-      this.isLoading = false
-
-      if (error) {
-        this.error = error.message
+        return true
+      } catch (error) {
+        this.error = error?.message || 'Registratie mislukt.'
         return false
+      } finally {
+        this.isLoading = false
       }
-
-      // Bij registratie logt Supabase de gebruiker direct in
-      this.user = data.user
-      // Afhankelijk van je instellingen, moet de gebruiker mogelijk eerst e-mail bevestigen
-      alert('Registratie succesvol. Controleer je e-mail voor bevestiging!')
-      toast.success('Registratie succesvol. Controleer je e-mail voor bevestiging!')
-      return true
     },
 
     // 3. Uitloggen
     async logout() {
-      await supabase.auth.signOut()
+      pb.authStore.clear()
       this.user = null
     },
 
     // 4. Gebruiker ophalen bij app start (Controleert sessie)
     async initializeUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      this.user = user
+      this.user = pb.authStore.model || null
     },
   },
 })

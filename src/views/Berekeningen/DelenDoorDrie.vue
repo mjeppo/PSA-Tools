@@ -84,17 +84,17 @@ const berekenDelen = () => {
         id="input-container"
         class="relative z-20 p-4 ml-2 w-max-[500px] bg-(--achtergrond-berekening) opacity-97 shadow rounded"
       >
-        <div class="grid grid-cols-[2fr_1fr_1fr_1fr] gap-2">
+        <div class="grid grid-cols-[200px_auto_auto_auto] gap-1">
           <input
             v-model.number="bedrag"
             type="number"
             placeholder="bedrag"
             @input="berekenDelen"
-            class="input-veld"
+            class="input-veld "
           />
           <button
             :class="[
-              'toggle-knop transition-all duration-300',
+              'toggle-knop transition-all duration-300 w-12',
               factor === 3
                 ? 'bg-(--dcterra-red) text-white'
                 : 'bg-(--dcterra-red-light) text-gray-700',
@@ -105,7 +105,7 @@ const berekenDelen = () => {
           </button>
           <button
             :class="[
-              'toggle-knop transition-all duration-300',
+              'toggle-knop transition-all duration-300 w-12',
               factor === 6
                 ? 'bg-(--dcterra-red) text-white'
                 : 'bg-(--dcterra-red-light) text-gray-700',
@@ -116,7 +116,7 @@ const berekenDelen = () => {
           </button>
           <button
             :class="[
-              'toggle-knop transition-all duration-300',
+              'toggle-knop transition-all duration-300 w-12',
               factor === 12
                 ? 'bg-(--dcterra-red) text-white'
                 : 'bg-(--dcterra-red-light) text-gray-700',
