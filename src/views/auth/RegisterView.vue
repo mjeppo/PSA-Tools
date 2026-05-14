@@ -1,9 +1,9 @@
 <template>
-  <div class="flex items-center justify-center h-screen bg-gray-300">
-    <div class="bg-amber-50 p-4 rounded">
+  <div class="flex items-center justify-center h-screen bg_1">
+    <div class="bg-(--achtergrond-berekening) p-4 rounded">
       <form @submit.prevent="handleRegister">
         <div class="form-group mb-2">
-          <label for="register-email">Emailadres :</label>
+          <label for="register-email" class="ml-2">Emailadres :</label>
           <input
             id="register-email"
             v-model="email"
@@ -14,7 +14,7 @@
           />
         </div>
         <div class="form-group mb-2">
-          <label for="register-password">Wachtwoord :</label>
+          <label for="register-password" class="ml-2">Wachtwoord :</label>
           <input
             id="register-password"
             v-model="password"
@@ -25,7 +25,7 @@
           />
         </div>
         <div class="form-group mb-4">
-          <label for="register-password-repeat">Herhaal wachtwoord :</label>
+          <label for="register-password-repeat" class="ml-2">Herhaal wachtwoord :</label>
           <input
             id="register-password-repeat"
             v-model="passwordRepeat"
@@ -35,11 +35,14 @@
             required
           />
         </div>
-
+        <p class="italic ml-2">
+          Wachtwoord moet uit minstens 8 tekens bestaan, met 1 hoofdletter en 1 cijfer.
+        </p>
         <button type="submit" :disabled="authStore.isLoading" class="btn btn-primary">
           {{ authStore.isLoading ? 'Bezig...' : 'Registreren' }}
         </button>
         <p v-if="authStore.error" class="error mt-2">{{ authStore.error }}</p>
+        <p class="ml-2 mt-4">Na registratie krijg je een e-mail met een bevestigingslink.</p>
       </form>
     </div>
   </div>
