@@ -3,6 +3,7 @@ import { useToast } from 'vue-toastification'
 import { pb } from '@/pocketbase.js'
 
 const toast = useToast()
+const allowedDomain = '@dcterra.nl'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -44,16 +45,40 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
       this.error = null
 
+      const normalizedEmail = email.trim().toLowerCase()
+      if (!normalizedEmail.endsWith(allowedDomain)) {
+        this.error = `Alleen e-mailadressen op ${allowedDomain} zijn toegestaan.`
+        this.isLoading = false
+        return false
+      }
+
       try {
         await pb.collection('users').create({
-          email,
+          email: normalizedEmail,
           password,
           passwordConfirm: password,
         })
 
+        await pb.collection('users').requestVerification(normalizedEmail)
+
         return true
       } catch (error) {
-        this.error = error?.message || 'Registratie mislukt.'
+        const emailError = error?.data?.email?.message
+        const passwordError = error?.data?.password?.message
+        const passwordConfirmError = error?.data?.passwordConfirm?.message
+
+        if (emailError) {
+          this.error = emailError
+        } else if (passwordError) {
+          this.error = passwordError
+        } else if (passwordConfirmError) {
+          this.error = passwordConfirmError
+        } else if (error?.message === 'Failed to create record.') {
+          this.error = `Registratie geweigerd door serverregel. Gebruik een ${allowedDomain} e-mailadres of controleer de PocketBase Create rule.`
+        } else {
+          this.error = error?.message || 'Registratie mislukt.'
+        }
+
         return false
       } finally {
         this.isLoading = false

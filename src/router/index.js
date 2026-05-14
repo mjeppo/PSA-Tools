@@ -22,6 +22,11 @@ const router = createRouter({
       component: () => import('@/views/auth/RegisterView.vue'),
     },
     {
+      path: '/auth/confirm-verification/:token',
+      name: 'confirm-verification',
+      component: () => import('@/views/auth/ConfirmVerificationView.vue'),
+    },
+    {
       path: '/berekeningen',
       name: 'berekeningen',
       component: Berekeningen,
