@@ -1,5 +1,5 @@
 <script setup>
-import { watch, defineEmits, computed } from 'vue'
+import { defineEmits, computed, ref, nextTick } from 'vue'
 import vSelect from 'vue-select'
 
 const props = defineProps({
@@ -17,32 +17,79 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const computedSelectedSchaal = computed({
-  // De getter stuurt de waarde van de prop naar v-select (voor het laden)
+const vSelectRef = ref(null)
+
+const selectedOption = computed({
+  // Zoek het volledige optie-object op basis van de label-string uit modelValue.
   get() {
-    return props.modelValue
+    if (props.modelValue == null) {
+      return null
+    }
+
+    if (typeof props.modelValue === 'object') {
+      return props.modelValue
+    }
+
+    return props.options.find((option) => option.label === props.modelValue) ?? null
   },
-  // De setter wordt geactiveerd wanneer v-select de v-model probeert te wijzigen
+  // Emit alleen de label-string terug zodat bestaande parent-code blijft werken.
   set(newValue) {
-    console.log('V-Select new value:', newValue)
-    // We versturen de wijziging direct terug naar de ouder
-    // (Hierdoor wordt de 'settings.geselecteerdeSchaalInView' direct bijgewerkt)
-    emit('update:modelValue', newValue)
+    emit('update:modelValue', newValue?.label ?? null)
   },
 })
+
+// Gebruik vue-select interne pointer, zodat de dropdown opent rond de huidige selectie.
+const handleOpen = async () => {
+  await nextTick()
+  const instance = vSelectRef.value
+
+  if (!instance) {
+    return
+  }
+
+  if (typeof instance.typeAheadToLastSelected === 'function') {
+    instance.typeAheadToLastSelected()
+  }
+
+  await nextTick()
+
+  const dropdownMenu = instance.$refs?.dropdownMenu
+  const pointer = instance.typeAheadPointer
+
+  if (
+    dropdownMenu &&
+    Number.isInteger(pointer) &&
+    pointer >= 0 &&
+    pointer < dropdownMenu.children.length
+  ) {
+    const selectedOptionElement = dropdownMenu.children[pointer]
+    const centerScrollTop =
+      selectedOptionElement.offsetTop -
+      dropdownMenu.clientHeight / 2 +
+      selectedOptionElement.clientHeight / 2
+
+    dropdownMenu.scrollTop = Math.max(0, centerScrollTop)
+    return
+  }
+
+  if (typeof instance.maybeAdjustScroll === 'function') {
+    instance.maybeAdjustScroll()
+  }
+}
 </script>
 
 <template>
   <div>
     <v-select
+      ref="vSelectRef"
       id="schaal-selector"
       class="rounded border-0! shadow-sm"
-      v-model="computedSelectedSchaal"
+      v-model="selectedOption"
       :options="props.options"
-      track-by="label"
-      :reduce="(option) => option.label"
+      label="label"
       placeholder="Selecteer een schaal"
       :searchable="true"
+      @open="handleOpen"
     />
   </div>
 </template>

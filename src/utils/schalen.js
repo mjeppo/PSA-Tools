@@ -1569,7 +1569,7 @@ export const schalenArray2025_1 = [
 ]
 
 const schalenArray = [
-  { text: '1,01', value: 2347, value2: 15 },
+  { text: '1,01', value: 2347},
   { text: '1,02', value: 2347 },
   { text: '1,03', value: 2347 },
   { text: '1,04', value: 2378 },

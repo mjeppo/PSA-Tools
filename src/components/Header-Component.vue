@@ -2,16 +2,18 @@
   <div class="bg-(--dcterra-black) w-full h-(--height-menu-topbar) text-white">
     <div class="flex justify-between items-center h-full">
       <nav class="flex justify-between items-center h-full">
-        <div class="w-(--width-menu-sidebar) h-full flex items-center justify-center"><img src="/src/img/logo_dcterra.png" class="w-46"/></div>
+        <div class="w-(--width-menu-sidebar) h-full flex items-center justify-center">
+          <img src="/src/img/logo_dcterra.png" class="w-46" />
+        </div>
         <div @mouseenter="open1 = true" @mouseleave="open1 = false">
-          <b-dropdown text="Berekeningen" variant="light" class="me-2" v-model="open1">
+          <b-dropdown text="Berekeningen" variant="light" class="me-2" v-model="open1" to="/berekeningen">
             <b-dropdown-item v-for="link in berekeningenLinks" :key="link.title" :to="link.to">
               {{ link.title }}
             </b-dropdown-item>
 
-            <b-dropdown-divider />
-            <b-dropdown-item active>Active action</b-dropdown-item>
-            <b-dropdown-item disabled>Disabled action</b-dropdown-item>
+            <!-- <b-dropdown-divider /> -->
+            <!-- <b-dropdown-item active>Active action</b-dropdown-item>
+            <b-dropdown-item disabled>Disabled action</b-dropdown-item> -->
           </b-dropdown>
         </div>
         <div @mouseenter="open2 = true" @mouseleave="open2 = false">
@@ -26,12 +28,9 @@
         </div>
         <div @mouseenter="open3 = true" @mouseleave="open3 = false">
           <b-dropdown text="Informatie" variant="light" class="me-2" v-model="open3">
-            <b-dropdown-item to="/berekeningen">Bedragen Werkgeversverklaring</b-dropdown-item>
-            <b-dropdown-item>Bedragen gratificatie</b-dropdown-item>
-            <b-dropdown-item>Third Action</b-dropdown-item>
-            <b-dropdown-divider />
-            <b-dropdown-item active>Active action</b-dropdown-item>
-            <b-dropdown-item disabled>Disabled action</b-dropdown-item>
+            <b-dropdown-item v-for="link in infoLinks" :key="link.title" :to="link.to">
+              {{ link.title }}
+            </b-dropdown-item>
           </b-dropdown>
         </div>
         <div @mouseenter="open4 = true" @mouseleave="open4 = false">
@@ -122,11 +121,28 @@ const berekeningenLinks = [
     title: 'Toelage berekenen',
     to: '/berekeningen/toelagen-berekenen',
   },
-   {
+  {
     title: 'Transitievergoeding berekenen',
     to: '/berekeningen/transitievergoeding-berekenen',
   },
+  {
+    title: 'Vergoeding woon-werk berekenen',
+    to: '/berekeningen/woon-werk-berekenen',
+  },
+
+  {
+    title: 'Delen door 3/6/12',
+    to: '/berekeningen/delen-door-drie',
+  },
   // Voeg hier de rest van de 13 links toe
+]
+
+const infoLinks = [
+  {
+    title: '🔒 Salarisschalen',
+    to: '/info/salarisschalen',
+    
+  },
 ]
 </script>
 

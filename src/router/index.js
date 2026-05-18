@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Berekeningen from '@/views/Berekeningen/Berekeningen.vue'
 import { useAuthStore } from '@/stores/auth'
+import Info from '@/views/Informatie/Info.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,6 +64,20 @@ const router = createRouter({
           component: () => import('@/views/Berekeningen/DelenDoorDrie.vue'),
         },
         // ... nog meer berekeningspagina's
+      ],
+    },
+    {
+      path: '/info',
+      name: 'info',
+      component: Info,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: 'salarisschalen', // URL: /info/salarisschalen
+          name: 'Salarisschalen',
+          component: () => import('@/views/Informatie/Salarisschalen.vue'),
+        },
+        
       ],
     },
   ],
