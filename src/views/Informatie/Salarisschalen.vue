@@ -192,7 +192,7 @@ function onKopieerToets(event, item) {
 </script>
 
 <template>
-  <div id="main" class="flex h-screen pt-20 justify-center bg_1 overflow-y-auto">
+  <div id="main" class="flex h-full pt-20 justify-center bg_1 overflow-y-auto">
     <div id="titel-container" class="flex flex-col gap-3 relative z-10 w-full max-w-7xl px-2 pb-10">
       <div class="page-title-wrap w-full">
         <PageTitleComponent tekst1="" tekst2="salarisschalen" tekst3="" image1="" class="w-full" />
@@ -268,31 +268,35 @@ function onKopieerToets(event, item) {
         </div>
 
         <div class="mt-3 flex flex-wrap items-center gap-3 border-t pt-3">
-          <div class="flex items-center gap-2">
-            <label class="text-sm whitespace-nowrap">FTE</label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+            <input v-model="verrekenFte" type="checkbox" class="w-4 h-4 cursor-pointer" />
+            Verrekenen met FTE
+          </label>
+          <div
+            class="flex items-center gap-2 transition-opacity duration-150"
+            :class="verrekenFte ? 'opacity-100' : 'opacity-35 pointer-events-none'"
+          >
+            <label class="text-sm whitespace-nowrap" :class="verrekenFte ? '' : 'text-gray-400'"
+              >FTE</label
+            >
             <input
               v-model.number="fte"
               type="number"
               min="0.01"
               max="1"
               step="0.01"
-              class="w-20 border rounded px-2 py-1 text-sm"
+              class="w-20 border rounded px-2 py-1 text-sm transition-colors duration-150"
+              :class="verrekenFte ? 'bg-white' : 'bg-gray-100 text-gray-400 border-gray-200'"
               :disabled="!verrekenFte"
             />
           </div>
-          <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
-            <input v-model="verrekenFte" type="checkbox" class="w-4 h-4 cursor-pointer" />
-            Verrekenen met FTE
-          </label>
         </div>
 
         <div class="mt-3 flex items-center justify-between gap-2">
           <p class="text-xs text-gray-700 mb-0">
             Actieve dataset: <strong>{{ gekozenDatasetLabel }}</strong
             >. Klik op een bedrag om te kopieren.
-            <span v-if="verrekenFte" class="ml-1 text-blue-700 font-medium"
-              >(FTE {{ fte }})</span
-            >
+            <span v-if="verrekenFte" class="ml-1 text-blue-700 font-medium">(FTE {{ fte }})</span>
           </p>
           <button
             type="button"

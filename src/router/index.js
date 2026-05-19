@@ -70,14 +70,18 @@ const router = createRouter({
       path: '/info',
       name: 'info',
       component: Info,
-      meta: { requiresAuth: true },
       children: [
         {
           path: 'salarisschalen', // URL: /info/salarisschalen
           name: 'Salarisschalen',
           component: () => import('@/views/Informatie/Salarisschalen.vue'),
         },
-        
+        {
+          path: 'adressen', // URL: /info/adressen
+          name: 'Adressen',
+          component: () => import('@/views/Informatie/Adressen.vue'),
+          meta: { requiresAuth: true },
+        },
       ],
     },
   ],
@@ -90,7 +94,7 @@ router.beforeEach((to, from, next) => {
   // 1. Controleer of de route authenticatie vereist
   if (requiresAuth && !authStore.isLoggedIn) {
     // Als auth vereist is EN de gebruiker NIET is ingelogd, stuur naar login
-    next({ name: 'login' })
+    next({ name: 'login', query: { redirect: to.fullPath } })
   } else if ((to.name === 'login' || to.name === 'register') && authStore.isLoggedIn) {
     // Als de gebruiker al is ingelogd, stuur dan weg van de login/register pagina's
     next({ name: 'home' }) // Vervang 'home' door je daadwerkelijke home route naam

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex h-full">
     <!-- Sidebar -->
     <div class="box-border! shrink-0 w-(--width-menu-sidebar)! bg-(--dcterra-black) text-white p-4">
       <h2 class="text-xl font-bold mb-1">Menu</h2>
@@ -7,7 +7,7 @@
 
       <ul class="p-0">
         <li
-          v-for="link in berekeningenMenuLinks"
+          v-for="link in berekeningenLinks"
           :key="link.title"
           @click="navigeerNaar(link.to)"
           class="text-white mb-2 hover:text-gray-500! active:translate-y-px cursor-pointer"
@@ -17,7 +17,7 @@
       </ul>
     </div>
 
-    <section class="calculation-content flex-1 overflow-auto">
+    <section class="calculation-content flex-1 h-full overflow-auto">
       <router-view />
     </section>
   </div>
@@ -25,6 +25,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { berekeningenLinks } from '@/router/links'
 const berekeningenMenuLinks = [
   {
     title: '● Bedragen Werkgeversverklaring',

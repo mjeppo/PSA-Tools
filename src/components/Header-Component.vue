@@ -5,6 +5,8 @@
         <div class="w-(--width-menu-sidebar) h-full flex items-center justify-center">
           <img src="/src/img/logo_dcterra.png" class="w-46" />
         </div>
+
+        <!-- Berekeningen -->
         <div @mouseenter="open1 = true" @mouseleave="open1 = false">
           <b-dropdown text="Berekeningen" variant="light" class="me-2" v-model="open1" to="/berekeningen">
             <b-dropdown-item v-for="link in berekeningenLinks" :key="link.title" :to="link.to">
@@ -16,13 +18,17 @@
             <b-dropdown-item disabled>Disabled action</b-dropdown-item> -->
           </b-dropdown>
         </div>
+
+        <!-- Informatie -->
         <div @mouseenter="open3 = true" @mouseleave="open3 = false">
           <b-dropdown text="Informatie" variant="light" class="me-2" v-model="open3">
-            <b-dropdown-item v-for="link in infoLinks" :key="link.title" :to="link.to">
+            <b-dropdown-item v-for="link in infoMenuLinks" :key="link.title" :to="link.to">
               {{ link.title }}
             </b-dropdown-item>
           </b-dropdown>
         </div>
+
+        <!-- Procedures -->
         <div @mouseenter="open2 = true" @mouseleave="open2 = false">
           <b-dropdown text="Procedures" variant="light" class="me-2" v-model="open2">
             <b-dropdown-item to="/berekeningen">Bedragen Werkgeversverklaring</b-dropdown-item>
@@ -84,6 +90,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { BDropdown, BDropdownItem, BDropdownDivider } from 'bootstrap-vue-next'
+import { infoMenuLinks, berekeningenLinks } from '@/router/links'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -109,42 +116,8 @@ const onLeave = () => {
   open.value = false
 }
 
-const berekeningenLinks = [
-  {
-    title: 'Bedragen Werkgeversverklaring',
-    to: '/berekeningen/werkgeversverklaring',
-  },
-  {
-    title: 'Bedragen Gratificatie',
-    to: '/berekeningen/gratificatie',
-  },
-  {
-    title: 'Toelage berekenen',
-    to: '/berekeningen/toelagen-berekenen',
-  },
-  {
-    title: 'Transitievergoeding berekenen',
-    to: '/berekeningen/transitievergoeding-berekenen',
-  },
-  {
-    title: 'Vergoeding woon-werk berekenen',
-    to: '/berekeningen/woon-werk-berekenen',
-  },
 
-  {
-    title: 'Delen door 3/6/12',
-    to: '/berekeningen/delen-door-drie',
-  },
-  // Voeg hier de rest van de 13 links toe
-]
 
-const infoLinks = [
-  {
-    title: '🔒 Salarisschalen',
-    to: '/info/salarisschalen',
-    
-  },
-]
 </script>
 
 <style>

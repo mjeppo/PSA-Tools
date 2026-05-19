@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center h-screen bg_1">
+  <div class="flex items-center justify-center min-h-fit bg_1">
     <div class="bg-(--achtergrond-berekening) p-4 rounded">
       <form @submit.prevent="handleRegister">
         <div class="form-group mb-2">

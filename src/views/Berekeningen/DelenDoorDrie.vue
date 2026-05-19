@@ -72,7 +72,7 @@ const berekenDelen = () => {
 </script>
 
 <template>
-  <div id="main" class="flex h-screen pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-20 justify-center bg_1">
     <div class="flex flex-col gap-2 relative z-10 w-max-[500px]">
       <PageTitleComponent
         tekst1="delen door"
@@ -90,7 +90,7 @@ const berekenDelen = () => {
             type="number"
             placeholder="bedrag"
             @input="berekenDelen"
-            class="input-veld "
+            class="input-veld"
           />
           <button
             :class="[

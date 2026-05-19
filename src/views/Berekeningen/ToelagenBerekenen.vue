@@ -318,7 +318,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="main" class="flex h-screen pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-20 justify-center bg_1">
     <div id="titel-container" class="flex flex-col gap-2 relative z-10 w-max-[900px]">
       <!-- Titel -->
       <PageTitleComponent tekst1="Bedrag" tekst2="toelage" tekst3="berekenen" />

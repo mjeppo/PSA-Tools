@@ -16,17 +16,14 @@
   font-size: 18px;
 }
 
-
-
 @import 'tailwindcss';
-
 
 :root {
   /* Kleuren */
   --dcterra-black: #232323;
   --dcterra-red: #d5002d;
   --dcterra-red-hover: #c00029;
-  --dcterra-red-hover-l: #E14C6C;
+  --dcterra-red-hover-l: #e14c6c;
   --dcterra-red-active: #aa0024;
   --dcterra-red-light: #f2b3c0;
   --achtergrond-berekening: #f3f4f6e1;
@@ -34,7 +31,7 @@
   --randkleur-inputs-hover: #bdc1c3da;
 
   /* Afmetingen */
-  --width-menu-sidebar: 300px;
+  --width-menu-sidebar: 330px;
   --height-menu-topbar: 80px;
 }
 
@@ -168,4 +165,10 @@
   transition: all 200ms ease-in-out;
 }
 
+.adressen-grid {
+  display: grid;
+  grid-template-columns: auto 400px 150px 30px 200px repeat(5, 30px); /* grid-cols-[200px_400px_150px_30px_30px_30px_30px_30px] */
+  gap: 10px; /* gap-2 */
+}
 
+/* [200px_300px_150px_50px_200px_50px_50px_50px_50px] */

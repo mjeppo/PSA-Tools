@@ -63,9 +63,14 @@ function onKopieerToets(event, waarde) {
 </script>
 
 <template>
-  <div id="main" class="flex h-screen pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-20 justify-center bg_1">
     <div class="flex flex-col gap-2 relative z-10 w-max-[500px]">
-      <PageTitleComponent tekst1="vergoeding" tekst2="woon-werk" tekst3="berekenen" image1="fa-solid fa-car-side" />
+      <PageTitleComponent
+        tekst1="vergoeding"
+        tekst2="woon-werk"
+        tekst3="berekenen"
+        image1="fa-solid fa-car-side"
+      />
       <div
         id="input-container"
         class="relative z-20 p-4 ml-2 w-max-[500px] bg-(--achtergrond-berekening) opacity-97 shadow rounded"

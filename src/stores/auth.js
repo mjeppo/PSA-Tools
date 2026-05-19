@@ -17,6 +17,9 @@ export const useAuthStore = defineStore('auth', {
       // Controleert of er een user object is
       return !!state.user
     },
+    isAdmin(state) {
+      return state.user?.admin === true
+    },
   },
 
   actions: {
