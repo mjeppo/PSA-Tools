@@ -16,6 +16,13 @@
             <b-dropdown-item disabled>Disabled action</b-dropdown-item> -->
           </b-dropdown>
         </div>
+        <div @mouseenter="open3 = true" @mouseleave="open3 = false">
+          <b-dropdown text="Informatie" variant="light" class="me-2" v-model="open3">
+            <b-dropdown-item v-for="link in infoLinks" :key="link.title" :to="link.to">
+              {{ link.title }}
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
         <div @mouseenter="open2 = true" @mouseleave="open2 = false">
           <b-dropdown text="Procedures" variant="light" class="me-2" v-model="open2">
             <b-dropdown-item to="/berekeningen">Bedragen Werkgeversverklaring</b-dropdown-item>
@@ -26,13 +33,7 @@
             <b-dropdown-item disabled>Disabled action</b-dropdown-item>
           </b-dropdown>
         </div>
-        <div @mouseenter="open3 = true" @mouseleave="open3 = false">
-          <b-dropdown text="Informatie" variant="light" class="me-2" v-model="open3">
-            <b-dropdown-item v-for="link in infoLinks" :key="link.title" :to="link.to">
-              {{ link.title }}
-            </b-dropdown-item>
-          </b-dropdown>
-        </div>
+        
         <div @mouseenter="open4 = true" @mouseleave="open4 = false">
           <b-dropdown text="Overig" variant="light" class="me-2" v-model="open4">
             <b-dropdown-item to="/berekeningen">Bedragen Werkgeversverklaring</b-dropdown-item>

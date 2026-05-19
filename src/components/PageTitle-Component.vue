@@ -12,7 +12,7 @@ defineProps({
 
 <template>
   <div
-    class="grid grid-cols-[50px_1fr] p-2 ml-2 w-max-[500px] overflow-hidden bg-(--achtergrond-berekening) opacity-97 shadow rounded"
+    class="grid grid-cols-[50px_1fr] p-2 ml-2 w-full overflow-hidden bg-(--achtergrond-berekening) opacity-97 shadow rounded "
   >
     <div class="self-center"><i :class="[image1, 'text-3xl']"></i></div>
     <div class="flex w-full items-center justify-center">

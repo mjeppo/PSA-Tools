@@ -34,6 +34,15 @@ const selectedDatasetId = ref('2025_1')
 const selectedSchaalFilterValues = ref([])
 const selectedSoortFilterValue = ref('ALL')
 
+const fte = ref(1)
+const verrekenFte = ref(false)
+
+function fteWaarde(waarde) {
+  if (!verrekenFte.value) return waarde
+  const factor = parseFloat(fte.value)
+  return isNaN(factor) || factor <= 0 ? waarde : waarde * factor
+}
+
 const selectedDatasetOptie = computed({
   get() {
     return datasetOpties.find((optie) => optie.id === selectedDatasetId.value) ?? datasetOpties[0]
@@ -164,7 +173,7 @@ const gekozenDatasetLabel = computed(() => {
 })
 
 async function kopieerSchaalBedrag(item) {
-  const result = await kopieerBedragNaarKlembord(item.value)
+  const result = await kopieerBedragNaarKlembord(fteWaarde(item.value))
 
   if (result.success) {
     toast.success(`Schaal ${item.label}: ${result.formatted} gekopieerd`)
@@ -185,7 +194,9 @@ function onKopieerToets(event, item) {
 <template>
   <div id="main" class="flex h-screen pt-20 justify-center bg_1 overflow-y-auto">
     <div id="titel-container" class="flex flex-col gap-3 relative z-10 w-full max-w-7xl px-2 pb-10">
-      <PageTitleComponent tekst1="" tekst2="salarisschalen" tekst3="overzicht" />
+      <div class="page-title-wrap w-full">
+        <PageTitleComponent tekst1="" tekst2="salarisschalen" tekst3="" image1="" class="w-full" />
+      </div>
 
       <div class="filters-panel p-3 bg-(--achtergrond-berekening) opacity-98 shadow rounded">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -256,10 +267,32 @@ function onKopieerToets(event, item) {
           </div>
         </div>
 
+        <div class="mt-3 flex flex-wrap items-center gap-3 border-t pt-3">
+          <div class="flex items-center gap-2">
+            <label class="text-sm whitespace-nowrap">FTE</label>
+            <input
+              v-model.number="fte"
+              type="number"
+              min="0.01"
+              max="1"
+              step="0.01"
+              class="w-20 border rounded px-2 py-1 text-sm"
+              :disabled="!verrekenFte"
+            />
+          </div>
+          <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+            <input v-model="verrekenFte" type="checkbox" class="w-4 h-4 cursor-pointer" />
+            Verrekenen met FTE
+          </label>
+        </div>
+
         <div class="mt-3 flex items-center justify-between gap-2">
           <p class="text-xs text-gray-700 mb-0">
             Actieve dataset: <strong>{{ gekozenDatasetLabel }}</strong
             >. Klik op een bedrag om te kopieren.
+            <span v-if="verrekenFte" class="ml-1 text-blue-700 font-medium"
+              >(FTE {{ fte }})</span
+            >
           </p>
           <button
             type="button"
@@ -306,7 +339,7 @@ function onKopieerToets(event, item) {
                 @click="kopieerSchaalBedrag(item)"
                 @keydown="onKopieerToets($event, item)"
               >
-                {{ FormateerGetallen.valuta(item.value) }}
+                {{ FormateerGetallen.valuta(fteWaarde(item.value)) }}
               </span>
             </div>
           </div>
@@ -317,18 +350,29 @@ function onKopieerToets(event, item) {
 </template>
 
 <style scoped>
+.page-title-wrap {
+  position: relative;
+  z-index: 70;
+}
+
+.page-title-wrap :deep(div.grid) {
+  height: auto !important;
+  min-height: 0 !important;
+  margin-left: 0 !important;
+}
+
 .filters-panel {
   position: relative;
-  z-index: 40;
+  z-index: 30;
 }
 
 .vselect-layer {
   position: relative;
-  z-index: 50;
+  z-index: 35;
 }
 
 .vselect-layer :deep(.vs__dropdown-menu) {
-  z-index: 60;
+  z-index: 45;
 }
 
 .compact-sections {
