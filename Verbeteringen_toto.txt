@@ -1,0 +1,4 @@
+Salarisschalen
+-filterbalk vast (geen scroll)
+-stappen fte per 0,1
+-optie fte toepassen en filters in localstorage

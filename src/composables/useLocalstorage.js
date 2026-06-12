@@ -21,10 +21,17 @@ const defaultSettings = {
   tb_hoogSchaal: 'LB',
   tb_hoogTrede: '01',
   tb_fteWaarde: '0,8000',
-  tb_berekeningsmethode: 'horizontaal', // 'horizontaal', '1-periodiek', '2-periodieken'
+  tb_berekeningsmethode: 'horizontaal', // 'horizontaal', '1-periodiek', '2-periodieken', 'naast-hoger-1-periodiek'
   tb_automatischeInschaling: true,
   trans_schaal: 'LB.01',
   trans_fteWaarde: '1,0000',
+  // Salarisschalen specifieke settings
+  ss_schaalFilterValues: [],
+  ss_soortFilterValue: 'ALL',
+  ss_fte: 1,
+  ss_verrekenFte: false,
+  // Regios en Diensten
+  regios_verborgenKolommen: [],
   // Hier komen later instellingen van andere pagina's bij:
   // thema: 'donker',
   // toonHulp: true,

@@ -193,7 +193,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="main" class="flex h-full pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-4 justify-center bg_1">
     <div id="titel-container" class="flex flex-col gap-2 relative z-10 w-max-[500px]">
       <!-- < <div
         class="grid grid-cols-[50px_100px_400px_200px] p-4 ml-2 w-max-[500px] overflow-hidden bg-(--achtergrond-berekening) opacity-97 shadow rounded"

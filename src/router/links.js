@@ -9,6 +9,11 @@ export const infoMenuLinks = [
     to: '/info/adressen',
     
   },
+   {
+    title: '🇳🇱 Regios en Diensten',
+    to: '/info/regios',
+    
+  },
   
 ]
 

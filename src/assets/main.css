@@ -26,6 +26,7 @@
   --dcterra-red-hover-l: #e14c6c;
   --dcterra-red-active: #aa0024;
   --dcterra-red-light: #f2b3c0;
+  --dcterra-red-lighter: #fddae1;
   --achtergrond-berekening: #f3f4f6e1;
   --randkleur-inputs: #bdc1c3;
   --randkleur-inputs-hover: #bdc1c3da;
@@ -98,7 +99,7 @@
 
 .bg_1 {
   background-image: url('/src/img/backgrounds/coolbackgrounds-fractalize-roja.png');
-  background-repeat: no-repeat;
+  background-repeat: repeat-y;
   background-size: cover;
 }
 

@@ -137,7 +137,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="main" class="flex h-full pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-4 justify-center bg_1">
     <div id="titel-container" class="flex flex-col gap-3 relative z-10 w-full max-w-7xl px-2 pb-10">
       <div class="page-title-wrap w-full">
         <PageTitleComponent tekst1="" tekst2="Adressen" tekst3="" image1="" class="w-full" />

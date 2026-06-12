@@ -3,6 +3,17 @@
     <div class="bg-(--achtergrond-berekening) p-4 rounded">
       <form @submit.prevent="handleRegister">
         <div class="form-group mb-2">
+          <label for="register-name" class="ml-2">Naam :</label>
+          <input
+            id="register-name"
+            v-model="name"
+            type="text"
+            placeholder="Voer naam in"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="form-group mb-2">
           <label for="register-email" class="ml-2">Emailadres :</label>
           <input
             id="register-email"
@@ -35,14 +46,20 @@
             required
           />
         </div>
-        <p class="italic ml-2">
-          Wachtwoord moet uit minstens 8 tekens bestaan, met 1 hoofdletter en 1 cijfer.
-        </p>
+
         <button type="submit" :disabled="authStore.isLoading" class="btn btn-primary">
           {{ authStore.isLoading ? 'Bezig...' : 'Registreren' }}
         </button>
         <p v-if="authStore.error" class="error mt-2">{{ authStore.error }}</p>
         <p class="ml-2 mt-4">Na registratie krijg je een e-mail met een bevestigingslink.</p>
+        <div class="p-2 bg-white rounded">
+          <p class="italic px-2">
+            Wachtwoord moet uit minstens 8 tekens bestaan, met 1 hoofdletter en 1 cijfer.
+          </p>
+          <p class="italic px-2">
+            Alleen emailadres van DCTerra komen in aanmerking voor registratie.
+          </p>
+        </div>
       </form>
     </div>
   </div>
@@ -61,6 +78,7 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const passwordRepeat = ref('')
+const name = ref('')
 const allowedDomain = '@dcterra.nl'
 
 function validatePassword(pwd) {
@@ -95,7 +113,7 @@ async function handleRegister() {
     return
   }
 
-  const success = await authStore.register(normalizedEmail, password.value)
+  const success = await authStore.register(normalizedEmail, password.value, name.value)
 
   if (success) {
     toast.success('Registratie gelukt. Controleer je e-mail voor bevestiging.')

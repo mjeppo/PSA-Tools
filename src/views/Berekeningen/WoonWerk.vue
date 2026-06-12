@@ -63,7 +63,7 @@ function onKopieerToets(event, waarde) {
 </script>
 
 <template>
-  <div id="main" class="flex h-full pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-4 justify-center bg_1">
     <div class="flex flex-col gap-2 relative z-10 w-max-[500px]">
       <PageTitleComponent
         tekst1="vergoeding"

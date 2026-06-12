@@ -89,6 +89,8 @@ const berekeningsTekst = computed(() => {
     methodeText = ' (+1 periodiek)'
   } else if (settings.tb_berekeningsmethode === '2-periodieken') {
     methodeText = ' (+2 periodieken)'
+  } else if (settings.tb_berekeningsmethode === 'naast-hoger-1-periodiek') {
+    methodeText = ' (naast hoger + 1 periodiek)'
   }
 
   return `Verschil ${laagLabel} - ${hoogLabel} => ${FormateerGetallen.valuta(hoogBedrag.value)} - ${FormateerGetallen.valuta(laagBedrag.value)} * ${FormateerGetallen.decimalen4(fteAsNumber.value)} = ${FormateerGetallen.valuta(toelage.value)}`
@@ -166,13 +168,65 @@ function onKopieerToets(event, callback) {
   }
 }
 
-// Watch voor automatische selectie van hogere schaal/trede
+// Helper functie: bepaal trede op basis van berekeningsmethode
+// Geeft null terug als de schaal geen geldige trede heeft (alle bedragen < laagBedrag)
+const berekenTredeVoorSchaal = (schaal) => {
+  const laagBedragVal = laagBedrag.value
+  if (laagBedragVal === null) return null
+
+  // Vind de eerste trede in deze schaal met bedrag >= laagBedrag (basis = horizontaal over)
+  const tredeOpties = getTredeOptions(schaal)
+  let baseTrede = null
+
+  for (const trede of tredeOpties) {
+    const bedrag = getBedragForLabel(schaal, trede, settings.tb_geselecteerdeCao)
+    if (bedrag !== null && bedrag >= laagBedragVal) {
+      baseTrede = trede
+      break
+    }
+  }
+
+  if (!baseTrede) {
+    return null
+  }
+
+  let steps = 0
+
+  if (settings.tb_berekeningsmethode === '1-periodiek') {
+    steps = 1
+  } else if (settings.tb_berekeningsmethode === '2-periodieken') {
+    steps = 2
+  } else if (settings.tb_berekeningsmethode === 'naast-hoger-1-periodiek') {
+    const baseBedrag = getBedragForLabel(schaal, baseTrede, settings.tb_geselecteerdeCao)
+    if (baseBedrag === laagBedragVal) {
+      steps = 1
+    } else {
+      steps = 0
+    }
+  }
+
+  if (steps > 0) {
+    const hogere = getTredeNStepsHigher(schaal, baseTrede, steps, settings.tb_geselecteerdeCao)
+    return hogere ? hogere.trede : baseTrede
+  }
+
+  return baseTrede
+}
+
+// Watch voor wanneer lagere schaal/trede/cao verandert
 watch(
   [() => settings.tb_laagSchaal, () => settings.tb_laagTrede, () => settings.tb_geselecteerdeCao],
   () => {
     if (!settings.tb_automatischeInschaling) return
 
-    if (laagBedrag.value) {
+    // Probeer trede te berekenen voor de huidige hogere schaal
+    const trede = berekenTredeVoorSchaal(settings.tb_hoogSchaal)
+
+    if (trede !== null) {
+      // Hogere schaal heeft een geldige trede: schaal vasthouden, trede aanpassen
+      settings.tb_hoogTrede = trede
+    } else {
+      // Geen geldige trede voor huidige hogere schaal: automatisch opzoeken
       const nextHigher = findNextHigherSchaalTrede(
         laagBedrag.value,
         settings.tb_laagSchaal,
@@ -181,122 +235,37 @@ watch(
 
       if (nextHigher) {
         settings.tb_hoogSchaal = nextHigher.schaal
-
-        // Bepaal hoeveel stappen we hoger moeten op basis van berekeningsmethode
-        let steps = 0
-        if (settings.tb_berekeningsmethode === '1-periodiek') {
-          steps = 1
-        } else if (settings.tb_berekeningsmethode === '2-periodieken') {
-          steps = 2
-        }
-
-        // Als we extra stappen nodig hebben, verhoog de trede
-        if (steps > 0) {
-          const hogere = getTredeNStepsHigher(
-            nextHigher.schaal,
-            nextHigher.trede,
-            steps,
-            settings.tb_geselecteerdeCao,
-          )
-          if (hogere) {
-            settings.tb_hoogTrede = hogere.trede
-          } else {
-            settings.tb_hoogTrede = nextHigher.trede
-          }
-        } else {
-          // Horizontaal over
-          settings.tb_hoogTrede = nextHigher.trede
+        const nieuwesTrede = berekenTredeVoorSchaal(nextHigher.schaal)
+        if (nieuwesTrede) {
+          settings.tb_hoogTrede = nieuwesTrede
         }
       }
     }
   },
 )
 
-// Watch voor als gebruiker hogere schaal handmatig wijzigt
+// Watch voor wanneer gebruiker hogere schaal handmatig wijzigt
 watch(
   () => settings.tb_hoogSchaal,
-  (newSchaal) => {
+  () => {
     if (!settings.tb_automatischeInschaling) return
 
-    if (laagBedrag.value && newSchaal) {
-      const nextHigher = findNextHigherSchaalTrede(
-        laagBedrag.value,
-        schaalOpties[schaalOpties.indexOf(newSchaal) - 1] || newSchaal,
-        settings.tb_geselecteerdeCao,
-      )
-
-      if (nextHigher && nextHigher.schaal === newSchaal) {
-        // Bepaal hoeveel stappen we hoger moeten op basis van berekeningsmethode
-        let steps = 0
-        if (settings.tb_berekeningsmethode === '1-periodiek') {
-          steps = 1
-        } else if (settings.tb_berekeningsmethode === '2-periodieken') {
-          steps = 2
-        }
-
-        // Als we extra stappen nodig hebben, verhoog de trede
-        if (steps > 0) {
-          const hogere = getTredeNStepsHigher(
-            nextHigher.schaal,
-            nextHigher.trede,
-            steps,
-            settings.tb_geselecteerdeCao,
-          )
-          if (hogere) {
-            settings.tb_hoogTrede = hogere.trede
-          } else {
-            settings.tb_hoogTrede = nextHigher.trede
-          }
-        } else {
-          // Horizontaal over
-          settings.tb_hoogTrede = nextHigher.trede
-        }
-      }
+    const trede = berekenTredeVoorSchaal(settings.tb_hoogSchaal)
+    if (trede !== null) {
+      settings.tb_hoogTrede = trede
     }
   },
 )
 
-// Watch voor berekeningsmethode wijziging - update de weergegeven trede
+// Watch voor berekeningsmethode wijziging - update de trede
 watch(
   () => settings.tb_berekeningsmethode,
-  (newMethod, oldMethod) => {
-    // Bereken eerst de basis trede (horizontaal over)
-    if (laagBedrag.value) {
-      const nextHigher = findNextHigherSchaalTrede(
-        laagBedrag.value,
-        settings.tb_laagSchaal,
-        settings.tb_geselecteerdeCao,
-      )
+  () => {
+    if (!settings.tb_automatischeInschaling) return
 
-      if (nextHigher) {
-        settings.tb_hoogSchaal = nextHigher.schaal
-
-        // Bepaal hoeveel stappen we hoger moeten
-        let steps = 0
-        if (newMethod === '1-periodiek') {
-          steps = 1
-        } else if (newMethod === '2-periodieken') {
-          steps = 2
-        }
-
-        // Als we extra stappen nodig hebben, verhoog de trede
-        if (steps > 0) {
-          const hogere = getTredeNStepsHigher(
-            nextHigher.schaal,
-            nextHigher.trede,
-            steps,
-            settings.tb_geselecteerdeCao,
-          )
-          if (hogere) {
-            settings.tb_hoogTrede = hogere.trede
-          } else {
-            settings.tb_hoogTrede = nextHigher.trede
-          }
-        } else {
-          // Horizontaal over
-          settings.tb_hoogTrede = nextHigher.trede
-        }
-      }
+    const trede = berekenTredeVoorSchaal(settings.tb_hoogSchaal)
+    if (trede !== null) {
+      settings.tb_hoogTrede = trede
     }
   },
 )
@@ -318,7 +287,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="main" class="flex h-full pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-4 justify-center bg_1">
     <div id="titel-container" class="flex flex-col gap-2 relative z-10 w-max-[900px]">
       <!-- Titel -->
       <PageTitleComponent tekst1="Bedrag" tekst2="toelage" tekst3="berekenen" />
@@ -401,11 +370,11 @@ onMounted(() => {
         <div>
           <p class="ubuntu-medium mb-2">Berekeningstype</p>
         </div>
-        <div class="grid grid-cols-3 gap-2 border border-(--randkleur-inputs)! p-1 rounded">
+        <div class="grid grid-cols-4 gap-2 border border-(--randkleur-inputs)! p-1 rounded">
           <button
             type="button"
             :class="[
-              'toggle-knop transition-all duration-300 py-2 shadow',
+              'toggle-knop transition-all duration-300 py-2 shadow text-sm',
               settings.tb_berekeningsmethode === 'horizontaal'
                 ? 'bg-(--dcterra-red)! text-white! font-semibold!'
                 : 'bg-(--dcterra-red-light) text-gray-500 hover:bg-gray-200',
@@ -417,7 +386,19 @@ onMounted(() => {
           <button
             type="button"
             :class="[
-              'toggle-knop transition-all duration-300 py-2 shadow',
+              'toggle-knop transition-all duration-300 py-2 shadow text-sm',
+              settings.tb_berekeningsmethode === 'naast-hoger-1-periodiek'
+                ? 'bg-(--dcterra-red)! text-white! font-semibold!'
+                : 'bg-(--dcterra-red-light) text-gray-500 hover:bg-gray-200',
+            ]"
+            @click="settings.tb_berekeningsmethode = 'naast-hoger-1-periodiek'"
+          >
+            Naast hoger + 1 periodiek
+          </button>
+          <button
+            type="button"
+            :class="[
+              'toggle-knop transition-all duration-300 py-2 shadow text-sm',
               settings.tb_berekeningsmethode === '1-periodiek'
                 ? 'bg-(--dcterra-red)! text-white! font-semibold!'
                 : 'bg-(--dcterra-red-light) text-gray-500 hover:bg-gray-200',
@@ -429,7 +410,7 @@ onMounted(() => {
           <button
             type="button"
             :class="[
-              'toggle-knop transition-all duration-300 py-2 shadow',
+              'toggle-knop transition-all duration-300 py-2 shadow text-sm',
               settings.tb_berekeningsmethode === '2-periodieken'
                 ? 'bg-(--dcterra-red)! text-white! font-semibold!'
                 : 'bg-(--dcterra-red-light) text-gray-500 hover:bg-gray-200',

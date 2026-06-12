@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // 2. Registreren van een nieuwe gebruiker
-    async register(email, password) {
+    async register(email, password, name) {
       this.isLoading = true
       this.error = null
 
@@ -60,28 +60,27 @@ export const useAuthStore = defineStore('auth', {
           email: normalizedEmail,
           password,
           passwordConfirm: password,
+          name: name.trim(),
         })
 
         await pb.collection('users').requestVerification(normalizedEmail)
 
         return true
       } catch (error) {
-        const emailError = error?.data?.email?.message
-        const passwordError = error?.data?.password?.message
-        const passwordConfirmError = error?.data?.passwordConfirm?.message
+        const data = error?.data?.data ?? error?.data ?? {}
+        const fieldError =
+          data?.name?.message ||
+          data?.email?.message ||
+          data?.password?.message ||
+          data?.passwordConfirm?.message
 
-        if (emailError) {
-          this.error = emailError
-        } else if (passwordError) {
-          this.error = passwordError
-        } else if (passwordConfirmError) {
-          this.error = passwordConfirmError
-        } else if (error?.message === 'Failed to create record.') {
-          this.error = `Registratie geweigerd door serverregel. Gebruik een ${allowedDomain} e-mailadres of controleer de PocketBase Create rule.`
+        if (fieldError) {
+          this.error = fieldError
         } else {
           this.error = error?.message || 'Registratie mislukt.'
         }
 
+        console.error('PocketBase registratiefout:', JSON.stringify(error?.data ?? error, null, 2))
         return false
       } finally {
         this.isLoading = false

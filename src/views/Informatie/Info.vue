@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-full">
     <!-- Sidebar -->
-    <div class="box-border! shrink-0 w-(--width-menu-sidebar)! bg-(--dcterra-black) text-white p-4">
+    <div class="box-border! shrink-0  w-fit bg-(--dcterra-black) text-white p-4">
       <h2 class="text-xl font-bold mb-1">Menu</h2>
       <h5 class="mb-4">Informatie</h5>
 

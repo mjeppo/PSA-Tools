@@ -1,11 +1,11 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 import HeaderComponent from './components/Header-Component.vue'
 import FooterComponent from './components/Footer-Component.vue'
 </script>
 
 <template>
-  <div id="app-layout" class="flex flex-col min-h-screen">
+  <div id="app-layout" class="flex flex-col">
     <HeaderComponent />
     <main class="main-content grow min-h-0">
       <router-view v-slot="{ Component }">

@@ -82,6 +82,12 @@ const router = createRouter({
           component: () => import('@/views/Informatie/Adressen.vue'),
           meta: { requiresAuth: true },
         },
+        {
+          path: 'regios', // URL: /info/regios
+          name: 'Regios en Diensten',
+          component: () => import('@/views/Informatie/Regios.vue'),
+          meta: { requiresAuth: true },
+        },
       ],
     },
   ],

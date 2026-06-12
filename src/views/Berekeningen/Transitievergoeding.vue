@@ -159,24 +159,46 @@ function addDays(datum, dagen) {
 }
 
 function dateDiff(startDatum, eindDatum) {
+  // Beide data zijn INCLUSIEF (tot en met)
   if (!startDatum || !eindDatum || eindDatum < startDatum) {
     return { jaren: 0, maanden: 0, dagen: 0 }
   }
 
-  let jaren = eindDatum.getFullYear() - startDatum.getFullYear()
-  let maanden = eindDatum.getMonth() - startDatum.getMonth()
-  let dagen = eindDatum.getDate() - startDatum.getDate()
+  const sy = startDatum.getFullYear(), sm = startDatum.getMonth(), sd = startDatum.getDate()
+  const ey = eindDatum.getFullYear(),  em = eindDatum.getMonth(),  ed = eindDatum.getDate()
 
-  if (dagen < 0) {
-    maanden -= 1
-    const dagenInVorigeMaand = new Date(eindDatum.getFullYear(), eindDatum.getMonth(), 0).getDate()
-    dagen += dagenInVorigeMaand
+  // Zelfde kalendermaand: simpele dagtelling
+  if (sy === ey && sm === em) {
+    return { jaren: 0, maanden: 0, dagen: ed - sd + 1 }
   }
 
-  if (maanden < 0) {
-    jaren -= 1
-    maanden += 12
+  const daysInSM = new Date(sy, sm + 1, 0).getDate()
+  const daysInEM = new Date(ey, em + 1, 0).getDate()
+
+  // Resterende dagen in beginmaand (startdatum t/m einde beginmaand)
+  const startRest = sd === 1 ? 0 : (daysInSM - sd + 1)
+
+  // Eindmaand volledig of gedeeltelijk?
+  const eindVolMaand = ed === daysInEM
+  const eindRest = eindVolMaand ? 0 : ed
+
+  // Eerste volledige kalendermaand
+  let fcy = sy, fcm = sd === 1 ? sm : sm + 1
+  if (fcm > 11) { fcy++; fcm = 0 }
+
+  // Laatste volledige kalendermaand
+  let lcy = ey, lcm = eindVolMaand ? em : em - 1
+  if (lcm < 0) { lcy--; lcm = 11 }
+
+  // Tel volledige kalendermaanden
+  let totalMaanden = 0
+  if (lcy > fcy || (lcy === fcy && lcm >= fcm)) {
+    totalMaanden = (lcy - fcy) * 12 + (lcm - fcm) + 1
   }
+
+  const jaren   = Math.floor(totalMaanden / 12)
+  const maanden = totalMaanden % 12
+  const dagen   = startRest + eindRest
 
   return { jaren, maanden, dagen }
 }
@@ -218,9 +240,7 @@ const bedragen = computed(() => {
   const totaal = brutoMaand + vakantietoeslag + eindejaars + anderMeetellendLoon.value
   const ingangDatum = parseDatumString(transIngang.value)
   const eindDatum = parseDatumString(transEinddatum.value)
-  const uitDienstInclusief = eindDatum ? addDays(eindDatum, 1) : null
-  const resultaat =
-    ingangDatum && uitDienstInclusief ? dateDiff(ingangDatum, uitDienstInclusief) : null
+  const resultaat = ingangDatum && eindDatum ? dateDiff(ingangDatum, eindDatum) : null
   const jaren = resultaat?.jaren ?? 0
   const maanden = (resultaat?.maanden ?? 0) / 12
   const dagen = (resultaat?.dagen ?? 0) / 365
@@ -267,7 +287,7 @@ const vakantietoeslagBerekening = computed(() => bedragen.value.vakantietoeslagB
 const eindejaarsUitkeringBerekening = computed(() => bedragen.value.eindejaarsUitkeringBerekening)
 const totaalBedragBerekening = computed(() => bedragen.value.totaalBedragBerekening)
 const totaalPeriodeloonBerekening = computed(() => bedragen.value.periodeloonBerekening)
-const dienstjaren = computed(() => bedragen.value.dienstjarenExact.toFixed(5))
+const dienstjaren = computed(() => bedragen.value.dienstjarenExact.toFixed(6))
 const dienstjarenBerekeningTekst = computed(() => bedragen.value.dienstjarenBerekening)
 const transitievergoedingBedrag = computed(() => formatValuta(bedragen.value.transitievergoeding))
 const transitievergoedingBerekeningTekst = computed(
@@ -323,7 +343,7 @@ watch([transIngang, transEinddatum], () => {
 </script>
 
 <template>
-  <div id="main" class="flex h-full pt-20 justify-center bg_1">
+  <div id="main" class="flex h-full pt-4 justify-center bg_1">
     <div id="titel-container" class="flex flex-col gap-2 relative z-10 w-max-[500px]">
       <PageTitleComponent tekst1="bedrag" tekst2="transitievergoeding" tekst3="berekenen" />
       <div

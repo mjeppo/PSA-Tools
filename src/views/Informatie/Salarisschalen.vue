@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import vSelect from 'vue-select'
 import { useToast } from 'vue-toastification'
 import PageTitleComponent from '@/components/PageTitle-Component.vue'
+import { useSettings } from '@/composables/useLocalstorage'
 import {
   schalenArray2025_1,
   schalenArray2024_1,
@@ -10,9 +11,15 @@ import {
   schalenArray2023_1,
   schalenArray2023_2,
 } from '@/utils/schalen'
-import { FormateerGetallen, kopieerBedrag as kopieerBedragNaarKlembord } from '@/utils/utilities'
+import {
+  FormateerGetallen,
+  kopieerBedrag as kopieerBedragNaarKlembord,
+  selectValue,
+  resetSelectValue,
+} from '@/utils/utilities'
 
 const toast = useToast()
+const { settings } = useSettings()
 
 const datasetOpties = [
   { id: '2025_1', label: '2025-1 (01-01-2025)' },
@@ -30,12 +37,46 @@ const datasets = {
   '2023_1': schalenArray2023_1,
 }
 
+// CAO-versie keuze is sessiegebonden en wordt bewust niet opgeslagen in localStorage
 const selectedDatasetId = ref('2025_1')
-const selectedSchaalFilterValues = ref([])
-const selectedSoortFilterValue = ref('ALL')
 
-const fte = ref(1)
-const verrekenFte = ref(false)
+const selectedSchaalFilterValues = computed({
+  get() {
+    return Array.isArray(settings.ss_schaalFilterValues) ? settings.ss_schaalFilterValues : []
+  },
+  set(value) {
+    settings.ss_schaalFilterValues = Array.isArray(value) ? value : []
+  },
+})
+
+const selectedSoortFilterValue = computed({
+  get() {
+    return settings.ss_soortFilterValue ?? 'ALL'
+  },
+  set(value) {
+    settings.ss_soortFilterValue = value ?? 'ALL'
+  },
+})
+
+const fte = computed({
+  get() {
+    const current = Number(settings.ss_fte)
+    return Number.isFinite(current) && current > 0 ? current : 1
+  },
+  set(value) {
+    const next = Number(value)
+    settings.ss_fte = Number.isFinite(next) && next > 0 ? next : 1
+  },
+})
+
+const verrekenFte = computed({
+  get() {
+    return Boolean(settings.ss_verrekenFte)
+  },
+  set(value) {
+    settings.ss_verrekenFte = Boolean(value)
+  },
+})
 
 function fteWaarde(waarde) {
   if (!verrekenFte.value) return waarde
@@ -124,6 +165,8 @@ function clearAlleFilters() {
   clearCaoFilter()
   clearSchaalFilter()
   clearSoortFilter()
+  fte.value = 1
+  verrekenFte.value = false
 }
 
 const verrijkteSchalen = computed(() => {
@@ -172,6 +215,14 @@ const gekozenDatasetLabel = computed(() => {
   return datasetOpties.find((optie) => optie.id === selectedDatasetId.value)?.label ?? ''
 })
 
+const isNietNieuwsteCao = computed(() => {
+  return selectedDatasetId.value !== datasetOpties[0].id
+})
+
+const vandaagFormatted = computed(() => {
+  return new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })
+})
+
 async function kopieerSchaalBedrag(item) {
   const result = await kopieerBedragNaarKlembord(fteWaarde(item.value))
 
@@ -192,16 +243,30 @@ function onKopieerToets(event, item) {
 </script>
 
 <template>
-  <div id="main" class="flex h-full pt-20 justify-center bg_1 overflow-y-auto">
+  <div id="main" class="flex h-full pt-4 justify-center bg_1 overflow-y-auto">
     <div id="titel-container" class="flex flex-col gap-3 relative z-10 w-full max-w-7xl px-2 pb-10">
       <div class="page-title-wrap w-full">
         <PageTitleComponent tekst1="" tekst2="salarisschalen" tekst3="" image1="" class="w-full" />
       </div>
 
-      <div class="filters-panel p-3 bg-(--achtergrond-berekening) opacity-98 shadow rounded">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="filters-panel p-2 bg-(--achtergrond-berekening) opacity-98 shadow rounded">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div class="vselect-layer">
-            <label class="text-sm mb-1 block">CAO-versie</label>
+            <div class="flex items-center gap-2 mb-1">
+              <label class="text-xs">CAO-versie</label>
+              <span
+                v-if="isNietNieuwsteCao"
+                class="inline-flex items-center rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 text-xs font-medium leading-none"
+              >
+                Let op: niet de nieuwste CAO-versie
+              </span>
+              <span
+                v-else
+                class="inline-flex items-center rounded bg-green-100 text-green-800 px-1.5 py-0.5 text-xs font-medium leading-none"
+              >
+                Actuele versie ({{ vandaagFormatted }})
+              </span>
+            </div>
             <div class="flex gap-2 items-center">
               <v-select
                 v-model="selectedDatasetOptie"
@@ -213,7 +278,7 @@ function onKopieerToets(event, item) {
               />
               <button
                 type="button"
-                class="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100"
+                class="px-2 py-0.5 text-xs rounded border bg-white hover:bg-gray-100"
                 @click="clearCaoFilter"
               >
                 Wissen
@@ -222,7 +287,7 @@ function onKopieerToets(event, item) {
           </div>
 
           <div class="vselect-layer">
-            <label class="text-sm mb-1 block">Filter op schaal</label>
+            <label class="text-xs mb-1 block">Filter op schaal</label>
             <div class="flex gap-2 items-center">
               <v-select
                 v-model="selectedSchaalFilter"
@@ -237,7 +302,7 @@ function onKopieerToets(event, item) {
               />
               <button
                 type="button"
-                class="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100"
+                class="px-2 py-0.5 text-xs rounded border bg-white hover:bg-gray-100"
                 @click="clearSchaalFilter"
               >
                 Wissen
@@ -246,7 +311,7 @@ function onKopieerToets(event, item) {
           </div>
 
           <div class="vselect-layer">
-            <label class="text-sm mb-1 block">Filter op soort schaal</label>
+            <label class="text-xs mb-1 block">Filter op soort schaal</label>
             <div class="flex gap-2 items-center">
               <v-select
                 v-model="selectedSoortFilter"
@@ -258,7 +323,7 @@ function onKopieerToets(event, item) {
               />
               <button
                 type="button"
-                class="px-2 py-1 text-xs rounded border bg-white hover:bg-gray-100"
+                class="px-2 py-0.5 text-xs rounded border bg-white hover:bg-gray-100"
                 @click="clearSoortFilter"
               >
                 Wissen
@@ -267,40 +332,50 @@ function onKopieerToets(event, item) {
           </div>
         </div>
 
-        <div class="mt-3 flex flex-wrap items-center gap-3 border-t pt-3">
-          <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
-            <input v-model="verrekenFte" type="checkbox" class="w-4 h-4 cursor-pointer" />
-            Verrekenen met FTE
-          </label>
-          <div
-            class="flex items-center gap-2 transition-opacity duration-150"
-            :class="verrekenFte ? 'opacity-100' : 'opacity-35 pointer-events-none'"
-          >
-            <label class="text-sm whitespace-nowrap" :class="verrekenFte ? '' : 'text-gray-400'"
-              >FTE</label
+        <div
+          class="mt-2 flex flex-wrap xl:flex-nowrap items-center justify-between gap-2 border-t pt-2"
+        >
+          <div class="flex items-center gap-2 shrink-0">
+            <label
+              class="inline-flex items-center gap-3 text-xs leading-none cursor-pointer select-none whitespace-nowrap"
             >
-            <input
-              v-model.number="fte"
-              type="number"
-              min="0.01"
-              max="1"
-              step="0.01"
-              class="w-20 border rounded px-2 py-1 text-sm transition-colors duration-150"
-              :class="verrekenFte ? 'bg-white' : 'bg-gray-100 text-gray-400 border-gray-200'"
-              :disabled="!verrekenFte"
-            />
+              <input v-model="verrekenFte" type="checkbox" class="w-4 h-4 cursor-pointer" />
+              <span class="leading-none ml-2">Verrekenen met FTE</span>
+            </label>
+            <div
+              class="flex items-center gap-2 transition-opacity duration-150 ml-2"
+              :class="verrekenFte ? 'opacity-100' : 'opacity-35 pointer-events-none'"
+            >
+              <label
+                class="text-xs leading-none whitespace-nowrap mt-1.5"
+                :class="verrekenFte ? '' : 'text-gray-400'"
+                >FTE:</label
+              >
+              <input
+                v-model.number="fte"
+                type="number"
+                min="0.1"
+                max="1"
+                step="0.1"
+                placeholder="FTE"
+                class="w-20 border rounded px-2 py-0.5 text-xs transition-colors duration-150"
+                @click="selectValue"
+                @blur="resetSelectValue"
+                :class="verrekenFte ? 'bg-white' : 'bg-gray-100 text-gray-400 border-gray-200'"
+                :disabled="!verrekenFte"
+              />
+            </div>
           </div>
-        </div>
 
-        <div class="mt-3 flex items-center justify-between gap-2">
-          <p class="text-xs text-gray-700 mb-0">
+          <p class="text-xs text-gray-700 mb-0 leading-none whitespace-nowrap">
             Actieve dataset: <strong>{{ gekozenDatasetLabel }}</strong
             >. Klik op een bedrag om te kopieren.
             <span v-if="verrekenFte" class="ml-1 text-blue-700 font-medium">(FTE {{ fte }})</span>
           </p>
+
           <button
             type="button"
-            class="px-3 py-1 text-xs rounded border bg-(--dcterra-black) text-white hover:opacity-90"
+            class="px-3 py-0.5 text-xs rounded border bg-(--dcterra-black) text-white hover:opacity-90 whitespace-nowrap shrink-0"
             @click="clearAlleFilters"
           >
             Alle filters wissen
@@ -366,8 +441,10 @@ function onKopieerToets(event, item) {
 }
 
 .filters-panel {
-  position: relative;
-  z-index: 30;
+  position: sticky;
+  top: 0.25rem;
+  z-index: 40;
+  backdrop-filter: blur(2px);
 }
 
 .vselect-layer {
