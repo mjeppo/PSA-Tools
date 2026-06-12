@@ -137,18 +137,6 @@ const soortFilterOpties = [
   { value: 'OP', label: 'OP (LB, LC, LD)' },
 ]
 
-const selectedSoortFilter = computed({
-  get() {
-    return (
-      soortFilterOpties.find((optie) => optie.value === selectedSoortFilterValue.value) ??
-      soortFilterOpties[0]
-    )
-  },
-  set(newValue) {
-    selectedSoortFilterValue.value = newValue?.value ?? 'ALL'
-  },
-})
-
 function clearCaoFilter() {
   selectedDatasetId.value = '2025_1'
 }
@@ -243,13 +231,14 @@ function onKopieerToets(event, item) {
 </script>
 
 <template>
-  <div id="main" class="flex h-full pt-4 justify-center bg_1 overflow-y-auto">
-    <div id="titel-container" class="flex flex-col gap-3 relative z-10 w-full max-w-7xl px-2 pb-10">
+  <div id="main" class="flex flex-col h-full pt-4 bg_1 overflow-y-auto">
+    <div id="titel-container" class="w-full max-w-7xl mx-auto px-2 mb-3">
       <div class="page-title-wrap w-full">
         <PageTitleComponent tekst1="" tekst2="salarisschalen" tekst3="" image1="" class="w-full" />
       </div>
+    </div>
 
-      <div class="filters-panel p-2 bg-(--achtergrond-berekening) opacity-98 shadow rounded">
+    <div class="filters-panel mx-2 p-2 bg-(--achtergrond-berekening) opacity-98 shadow rounded">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
           <div class="vselect-layer">
             <div class="flex items-center gap-2 mb-1">
@@ -297,7 +286,7 @@ function onKopieerToets(event, item) {
                 :closeOnSelect="false"
                 :clearable="false"
                 :searchable="true"
-                placeholder="Alle schalen"
+                placeholder="Alle schalen (meerdere selecties mogelijk)"
                 class="flex-1"
               />
               <button
@@ -310,23 +299,22 @@ function onKopieerToets(event, item) {
             </div>
           </div>
 
-          <div class="vselect-layer">
+          <div>
             <label class="text-xs mb-1 block">Filter op soort schaal</label>
-            <div class="flex gap-2 items-center">
-              <v-select
-                v-model="selectedSoortFilter"
-                :options="soortFilterOpties"
-                label="label"
-                :clearable="false"
-                :searchable="false"
-                class="flex-1"
-              />
+            <div class="flex gap-1 items-center">
               <button
+                v-for="optie in soortFilterOpties"
+                :key="optie.value"
                 type="button"
-                class="px-2 py-0.5 text-xs rounded border bg-white hover:bg-gray-100"
-                @click="clearSoortFilter"
+                :class="[
+                  'toggle-knop transition-all duration-300 text-xs',
+                  selectedSoortFilterValue === optie.value
+                    ? 'bg-(--dcterra-red) text-white'
+                    : 'bg-(--dcterra-red-light) text-gray-700',
+                ]"
+                @click="selectedSoortFilterValue = optie.value"
               >
-                Wissen
+                {{ optie.label }}
               </button>
             </div>
           </div>
@@ -383,7 +371,8 @@ function onKopieerToets(event, item) {
         </div>
       </div>
 
-      <div v-if="tabellenPerSchaal.length === 0" class="p-4 bg-white/85 rounded shadow text-sm">
+    <div class="w-full px-2 pb-10 mt-3">
+      <div v-if="tabellenPerSchaal.length === 0" class="p-4 bg-white/85 rounded shadow text-sm max-w-7xl mx-auto">
         Geen resultaten voor de gekozen filters.
       </div>
 

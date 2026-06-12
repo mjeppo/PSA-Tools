@@ -6,7 +6,7 @@ import FooterComponent from './components/Footer-Component.vue'
 
 <template>
   <div id="app-layout" class="flex flex-col">
-    <HeaderComponent />
+    <HeaderComponent class="shrink-0" />
     <main class="main-content grow min-h-0">
       <router-view v-slot="{ Component }">
         <component :is="Component" />
