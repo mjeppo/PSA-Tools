@@ -2,6 +2,8 @@
 import { ref, computed, nextTick, onMounted } from 'vue'
 import SchaalSelectComponent from '@/components/SchaalSelect-component.vue'
 import {
+  schalenArray2027_1,
+  schalenArray2026_1,
   schalenArray2025_1,
   schalenArray2024_1,
   schalenArray2024_2,
@@ -48,10 +50,12 @@ const caoMapping = {
   '2024-1 (01-01-2024)': schalenArray2024_1,
   '2024-2 (01-07-2024)': schalenArray2024_2,
   '2025-1 (01-01-2025)': schalenArray2025_1,
+  '2026-1 (01-07-2026)': schalenArray2026_1,
+  '2027-1 (01-01-2027)': schalenArray2027_1,
 }
 
 const actueleSchalenLijst = computed(() => {
-  return caoMapping[settings.wg_geselecteerdeCao] || schalenArray2025_1
+  return caoMapping[settings.wg_geselecteerdeCao] || schalenArray2026_1
 })
 
 const shortCaoVersion = computed(() => {

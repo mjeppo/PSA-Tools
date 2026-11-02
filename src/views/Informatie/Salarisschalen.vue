@@ -5,6 +5,8 @@ import { useToast } from 'vue-toastification'
 import PageTitleComponent from '@/components/PageTitle-Component.vue'
 import { useSettings } from '@/composables/useLocalstorage'
 import {
+  schalenArray2027_1,
+  schalenArray2026_1,
   schalenArray2025_1,
   schalenArray2024_1,
   schalenArray2024_2,
@@ -21,15 +23,24 @@ import {
 const toast = useToast()
 const { settings } = useSettings()
 
+// Gesorteerd van nieuw naar oud; ingangsdatum bepaalt welke versie vandaag geldt
 const datasetOpties = [
-  { id: '2025_1', label: '2025-1 (01-01-2025)' },
-  { id: '2024_2', label: '2024-2 (01-07-2024)' },
-  { id: '2024_1', label: '2024-1 (01-01-2024)' },
-  { id: '2023_2', label: '2023-2 (01-07-2023)' },
-  { id: '2023_1', label: '2023-1 (01-01-2023)' },
+  { id: '2027_1', label: '2027-1 (01-01-2027)', ingangsdatum: new Date(2027, 0, 1) },
+  { id: '2026_1', label: '2026-1 (01-07-2026)', ingangsdatum: new Date(2026, 6, 1) },
+  { id: '2025_1', label: '2025-1 (01-01-2025)', ingangsdatum: new Date(2025, 0, 1) },
+  { id: '2024_2', label: '2024-2 (01-07-2024)', ingangsdatum: new Date(2024, 6, 1) },
+  { id: '2024_1', label: '2024-1 (01-01-2024)', ingangsdatum: new Date(2024, 0, 1) },
+  { id: '2023_2', label: '2023-2 (01-07-2023)', ingangsdatum: new Date(2023, 6, 1) },
+  { id: '2023_1', label: '2023-1 (01-01-2023)', ingangsdatum: new Date(2023, 0, 1) },
 ]
 
+// Meest recente versie die vandaag al van kracht is
+const actueleDatasetOptie =
+  datasetOpties.find((optie) => optie.ingangsdatum <= new Date()) ?? datasetOpties.at(-1)
+
 const datasets = {
+  '2027_1': schalenArray2027_1,
+  '2026_1': schalenArray2026_1,
   '2025_1': schalenArray2025_1,
   '2024_2': schalenArray2024_2,
   '2024_1': schalenArray2024_1,
@@ -38,7 +49,7 @@ const datasets = {
 }
 
 // CAO-versie keuze is sessiegebonden en wordt bewust niet opgeslagen in localStorage
-const selectedDatasetId = ref('2025_1')
+const selectedDatasetId = ref(actueleDatasetOptie.id)
 
 const selectedSchaalFilterValues = computed({
   get() {
@@ -89,14 +100,14 @@ const selectedDatasetOptie = computed({
     return datasetOpties.find((optie) => optie.id === selectedDatasetId.value) ?? datasetOpties[0]
   },
   set(newValue) {
-    selectedDatasetId.value = newValue?.id ?? '2025_1'
+    selectedDatasetId.value = newValue?.id ?? actueleDatasetOptie.id
   },
 })
 
 const isOpPrefix = (prefix) => ['LB', 'LC', 'LD'].includes(prefix)
 
 const actieveDataset = computed(() => {
-  return datasets[selectedDatasetId.value] ?? schalenArray2025_1
+  return datasets[selectedDatasetId.value] ?? datasets[actueleDatasetOptie.id]
 })
 
 const schaalVolgorde = computed(() => {
@@ -138,7 +149,7 @@ const soortFilterOpties = [
 ]
 
 function clearCaoFilter() {
-  selectedDatasetId.value = '2025_1'
+  selectedDatasetId.value = actueleDatasetOptie.id
 }
 
 function clearSchaalFilter() {
@@ -204,7 +215,7 @@ const gekozenDatasetLabel = computed(() => {
 })
 
 const isNietNieuwsteCao = computed(() => {
-  return selectedDatasetId.value !== datasetOpties[0].id
+  return selectedDatasetId.value !== actueleDatasetOptie.id
 })
 
 const vandaagFormatted = computed(() => {
@@ -247,7 +258,7 @@ function onKopieerToets(event, item) {
                 v-if="isNietNieuwsteCao"
                 class="inline-flex items-center rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 text-xs font-medium leading-none"
               >
-                Let op: niet de nieuwste CAO-versie
+                Let op: niet de actuele CAO-versie
               </span>
               <span
                 v-else

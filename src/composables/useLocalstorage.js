@@ -8,14 +8,14 @@ const STORAGE_KEY = 'psaportal_user_settings' // Een unieke sleutel
 const defaultSettings = {
   wg_geselecteerdeSchaalInView: 'LB.11',
   wg_fteWaarde: '0,9000',
-  wg_geselecteerdeCao: '2025-1 (01-01-2025)',
+  wg_geselecteerdeCao: '2026-1 (01-07-2026)',
   // Gratificatie specifieke settings
   gr_geselecteerdeSchaalInView: 'LB.11',
   gr_fteWaarde: '0,9000',
-  gr_geselecteerdeCao: '2025-1 (01-01-2025)',
+  gr_geselecteerdeCao: '2026-1 (01-07-2026)',
   gr_selectedJubileumJaar: '25',
   // ToelagenBerekenen specifieke settings
-  tb_geselecteerdeCao: '2025-1 (01-01-2025)',
+  tb_geselecteerdeCao: '2026-1 (01-07-2026)',
   tb_laagSchaal: 'LB',
   tb_laagTrede: '11',
   tb_hoogSchaal: 'LB',
