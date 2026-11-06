@@ -10,6 +10,7 @@ import {
   schalenArray2023_1,
   schalenArray2023_2,
   caoVersie,
+  getActueleCaoVersie,
 } from '@/utils/schalen'
 import { useToast } from 'vue-toastification'
 import {
@@ -26,11 +27,13 @@ import PageTitleComponent from '@/components/PageTitle-Component.vue'
 
 const { settings } = useSettings()
 
-const isOptionsOpen = ref(false)
+const isOptionsOpen = ref(true)
 
 function toggleOptions() {
   isOptionsOpen.value = !isOptionsOpen.value
 }
+
+const isActueleCao = computed(() => settings.gr_geselecteerdeCao === getActueleCaoVersie())
 
 // const geselecteerdeSchaalInView = ref('LB.12') // Je kunt een initiële waarde geven
 const formatter = FormateerGetallen
@@ -191,7 +194,6 @@ function onKopieerToets(event, callback) {
 }
 
 onMounted(() => {
-  isOptionsOpen.value = false
   validateFTE()
 })
 </script>
@@ -369,7 +371,7 @@ onMounted(() => {
           ></i>
         </div>
 
-        <div v-show="isOptionsOpen" class="grid grid-cols-[100px_200px] w-80 text-sm">
+        <div v-show="isOptionsOpen" class="grid grid-cols-[100px_200px_1fr] text-sm">
           <div class="self-center">CAO versie :</div>
           <select
             v-model="settings.gr_geselecteerdeCao"
@@ -377,6 +379,9 @@ onMounted(() => {
           >
             <option v-for="item in caoVersie" :key="item" :value="item">{{ item }}</option>
           </select>
+          <p v-if="!isActueleCao" class="self-center ml-3 mb-0 text-red-600 ubuntu-medium">
+            Let op, je gebruikt niet de actuele CAO versie
+          </p>
         </div>
       </div>
     </div>

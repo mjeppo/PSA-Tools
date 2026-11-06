@@ -11,6 +11,7 @@ import {
   schalenArray2023_1,
   schalenArray2023_2,
   caoVersie,
+  getActueleCaoVersie,
 } from '@/utils/schalen'
 import { useToast } from 'vue-toastification'
 import {
@@ -29,11 +30,13 @@ const transIngang = ref('')
 const transEinddatum = ref('')
 const anderMeetellendLoon = ref(0)
 
-const isOptionsOpen = ref(false)
+const isOptionsOpen = ref(true)
 
 function toggleOptions() {
   isOptionsOpen.value = !isOptionsOpen.value
 }
+
+const isActueleCao = computed(() => settings.wg_geselecteerdeCao === getActueleCaoVersie())
 
 const toast = useToast()
 const toastIsActive = ref(false)
@@ -331,7 +334,6 @@ const standaardDatums = () => {
 }
 
 onMounted(() => {
-  isOptionsOpen.value = false
 
   const { begin, eind } = standaardDatums()
   transIngang.value = begin
@@ -559,7 +561,7 @@ watch([transIngang, transEinddatum], () => {
           ></i>
         </div>
 
-        <div v-show="isOptionsOpen" class="grid grid-cols-[100px_200px] w-80 text-sm">
+        <div v-show="isOptionsOpen" class="grid grid-cols-[100px_200px_1fr] text-sm">
           <div class="self-center">CAO versie :</div>
           <select
             v-model="settings.wg_geselecteerdeCao"
@@ -567,6 +569,9 @@ watch([transIngang, transEinddatum], () => {
           >
             <option v-for="item in caoVersie" :key="item" :value="item">{{ item }}</option>
           </select>
+          <p v-if="!isActueleCao" class="self-center ml-3 mb-0 text-red-600 ubuntu-medium">
+            Let op, je gebruikt niet de actuele CAO versie
+          </p>
         </div>
       </div>
     </div>

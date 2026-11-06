@@ -2002,6 +2002,14 @@ export const caoVersie = [
   '2027-1 (01-01-2027)',
 ]
 
+// Actuele versie: de laatste versie waarvan de ingangsdatum (uit het label) is bereikt
+export function getActueleCaoVersie(peildatum = new Date()) {
+  return caoVersie.findLast((versie) => {
+    const [, dag, maand, jaar] = versie.match(/\((\d{2})-(\d{2})-(\d{4})\)/)
+    return new Date(jaar, maand - 1, dag) <= peildatum
+  })
+}
+
 // Helper functies voor ToelagenBerekenen
 const schaalOrder = [
   'LB',

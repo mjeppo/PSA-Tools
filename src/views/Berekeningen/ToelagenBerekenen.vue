@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import {
   caoVersie,
+  getActueleCaoVersie,
   getSchaalOptions,
   getTredeOptions,
   getBedragForLabel,
@@ -24,13 +25,15 @@ import WerktijdfactorInput from '@/components/WerktijdfactorInput.vue'
 const { settings } = useSettings()
 const toast = useToast()
 
-const isOptionsOpen = ref(false)
+const isOptionsOpen = ref(true)
 const toastIsActive = ref(false)
 const fteStatus = ref('VALID')
 
 function toggleOptions() {
   isOptionsOpen.value = !isOptionsOpen.value
 }
+
+const isActueleCao = computed(() => settings.tb_geselecteerdeCao === getActueleCaoVersie())
 
 // Schaal opties (LB, LC, LD, 01-18)
 const schaalOpties = getSchaalOptions()
@@ -271,7 +274,6 @@ watch(
 )
 
 onMounted(() => {
-  isOptionsOpen.value = false
   validateFTE()
 
   const laagTredes = getTredeOptions(settings.tb_laagSchaal)
@@ -516,7 +518,7 @@ onMounted(() => {
           ></i>
         </div>
 
-        <div v-show="isOptionsOpen" class="grid grid-cols-[180px_200px] gap-y-2 text-sm mt-2">
+        <div v-show="isOptionsOpen" class="grid grid-cols-[180px_200px_1fr] gap-y-2 text-sm mt-2">
           <div class="self-center">CAO versie:</div>
           <select
             v-model="settings.tb_geselecteerdeCao"
@@ -524,8 +526,11 @@ onMounted(() => {
           >
             <option v-for="item in caoVersie" :key="item" :value="item">{{ item }}</option>
           </select>
+          <p v-if="!isActueleCao" class="self-center ml-3 mb-0 text-red-600 ubuntu-medium">
+            Let op, je gebruikt niet de actuele CAO versie
+          </p>
 
-          <div class="self-center">Automatische inschaling:</div>
+          <div class="self-center col-start-1">Automatische inschaling:</div>
           <div class="flex items-center gap-2">
             <input
               type="checkbox"
