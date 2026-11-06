@@ -93,7 +93,7 @@ const berekeningsTekst = computed(() => {
     methodeText = ' (naast hoger + 1 periodiek)'
   }
 
-  return `Verschil ${laagLabel} - ${hoogLabel} => ${FormateerGetallen.valuta(hoogBedrag.value)} - ${FormateerGetallen.valuta(laagBedrag.value)} * ${FormateerGetallen.decimalen4(fteAsNumber.value)} = ${FormateerGetallen.valuta(toelage.value)}`
+  return `Verschil ${hoogLabel} - ${laagLabel} => ${hoogBedrag.value} - ${laagBedrag.value} * ${FormateerGetallen.decimalen4(fteAsNumber.value)} = ${FormateerGetallen.valuta(toelage.value)}`
 })
 
 // FTE validatie
